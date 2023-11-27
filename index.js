@@ -27,6 +27,8 @@ async function run() {
     await client.connect();
 
     const packageCollection = client.db("gotripDB").collection("packages");
+    const storiesCollection = client.db("gotripDB").collection("stories");
+
     // package related apis
     app.get("/packages", async (req, res) => {
       const result = await packageCollection.find().toArray();
@@ -43,6 +45,13 @@ async function run() {
       const tourType = req.params.tourType;
       const query = { tourType };
       const result = await packageCollection.find(query).toArray();
+      res.send(result);
+    });
+
+    // stories related apis
+    app.post("/stories", async (req, res) => {
+      const story = req.body;
+      const result = await storiesCollection.insertOne(story);
       res.send(result);
     });
 
