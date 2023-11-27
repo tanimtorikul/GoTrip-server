@@ -49,6 +49,17 @@ async function run() {
     });
 
     // stories related apis
+    app.get("/stories", async (req, res) => {
+      const result = await storiesCollection.find().toArray();
+      res.send(result);
+    });
+    app.get("/stories/:id", async (req, res) => {
+      const storyId = req.params.id;
+      const id = new ObjectId(storyId);
+      const result = await packageCollection.findOne(id);
+      res.send(result);
+    });
+
     app.post("/stories", async (req, res) => {
       const story = req.body;
       const result = await storiesCollection.insertOne(story);
