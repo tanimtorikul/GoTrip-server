@@ -28,6 +28,7 @@ async function run() {
 
     const packageCollection = client.db("gotripDB").collection("packages");
     const storiesCollection = client.db("gotripDB").collection("stories");
+    const userCollection = client.db("gotripDB").collection("users");
 
     // package related apis
     app.get("/packages", async (req, res) => {
@@ -45,6 +46,18 @@ async function run() {
       const tourType = req.params.tourType;
       const query = { tourType };
       const result = await packageCollection.find(query).toArray();
+      res.send(result);
+    });
+    // user related apis
+    app.post("/users", async (req, res) => {
+      const user = req.body;
+      // insert email if user doesnt exist
+      const query = { email: user.email };
+      const existingUser = await userCollection.findOne(query);
+      if (existingUser) {
+        return res.send({ message: "user already exists" });
+      }
+      const result = await userCollection.insertOne(user);
       res.send(result);
     });
 
