@@ -105,6 +105,12 @@ async function run() {
       res.json(result);
     });
 
+    app.delete("/wishlists/:id", async (req, res) => {
+      const wishlistId = req.params.id;
+      const result = await wishListCollection.deleteOne({ _id: wishlistId });
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
     console.log(
