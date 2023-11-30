@@ -29,10 +29,17 @@ async function run() {
     const packageCollection = client.db("gotripDB").collection("packages");
     const storiesCollection = client.db("gotripDB").collection("stories");
     const userCollection = client.db("gotripDB").collection("users");
+    const wishListCollection = client.db("gotripDB").collection("wishLists");
 
     // package related apis
     app.get("/packages", async (req, res) => {
       const result = await packageCollection.find().toArray();
+      res.send(result);
+    });
+
+    app.post("/packages", async (req, res) => {
+      const item = req.body;
+      const result = await packageCollection.insertOne(item);
       res.send(result);
     });
 
@@ -49,6 +56,12 @@ async function run() {
       res.send(result);
     });
     // user related apis
+
+    app.get("/users", async (req, res) => {
+      const result = await userCollection.find().toArray();
+      res.send(result);
+    });
+
     app.post("/users", async (req, res) => {
       const user = req.body;
       // insert email if user doesnt exist
@@ -77,6 +90,19 @@ async function run() {
       const story = req.body;
       const result = await storiesCollection.insertOne(story);
       res.send(result);
+    });
+
+    // wishlist related apis
+    app.post("/wishlists", async (req, res) => {
+      const wishList = req.body;
+      const result = await wishListCollection.insertOne(wishList);
+      res.send(result);
+    });
+    app.get("/wishlists", async (req, res) => {
+      const email = req.query.email;
+      const query = { userEmail: email };
+      const result = await wishListCollection.find(query).toArray();
+      res.json(result);
     });
 
     // Send a ping to confirm a successful connection
