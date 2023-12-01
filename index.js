@@ -30,6 +30,7 @@ async function run() {
     const storiesCollection = client.db("gotripDB").collection("stories");
     const userCollection = client.db("gotripDB").collection("users");
     const wishListCollection = client.db("gotripDB").collection("wishLists");
+    const bookingCollection = client.db("gotripDB").collection("bookings");
 
     // package related apis
     app.get("/packages", async (req, res) => {
@@ -81,8 +82,8 @@ async function run() {
     });
     app.get("/stories/:id", async (req, res) => {
       const storyId = req.params.id;
-      const id = new ObjectId(storyId);
-      const result = await packageCollection.findOne(id);
+      const objectId = new ObjectId(storyId);
+      const result = await storiesCollection.findOne({ _id: objectId });
       res.send(result);
     });
 
@@ -111,11 +112,18 @@ async function run() {
       res.send(result);
     });
 
+    // bookings related apis
+    app.post("/bookings", async (req, res) => {
+      const bookings = req.body;
+      const result = await bookingCollection.insertOne(bookings);
+      res.send(result);
+    });
+
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log(
-      "Pinged your deployment. You successfully connected to MongoDB!"
-    );
+    // await client.db("admin").command({ ping: 1 });
+    // console.log(
+    //   "Pinged your deployment. You successfully connected to MongoDB!"
+    // );
   } finally {
     // Ensures that the client will close when you finish/error
     // await client.close();
