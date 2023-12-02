@@ -47,14 +47,14 @@ async function run() {
       if (!req.headers.authorization) {
         return res.status(401).send({ message: "forbidden access" });
       }
-      const token = req.headers.authorization.split(' ')[1]
+      const token = req.headers.authorization.split(" ")[1];
       jwt.verify(token, process.env.ACCESS_TOKEN_SECRET, (err, decoded) => {
         if (err) {
-          return res.status(401).send({message: 'forbidden access'})
+          return res.status(401).send({ message: "forbidden access" });
         }
         req.decoded = decoded;
         next();
-      })
+      });
     };
 
     // package related apis
@@ -111,6 +111,19 @@ async function run() {
       };
       const result = await userCollection.updateOne(filter, updatedDoc);
       res.send(result);
+    });
+    app.get("/users/admin/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "unauthorized access" });
+      }
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let admin = false;
+      if (user) {
+        admin = user?.role === "admin";
+      }
+      res.send({ admin });
     });
 
     // stories related apis
