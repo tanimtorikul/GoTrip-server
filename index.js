@@ -143,12 +143,15 @@ async function run() {
       if (email !== req.decoded.email) {
         return res.status(403).send({ message: "unauthorized access" });
       }
+
       const query = { email: email };
       const user = await userCollection.findOne(query);
+
       let tourguide = false;
       if (user) {
-        admin = user?.role === "tourguide";
+        tourguide = user?.role === "tourguide";
       }
+
       res.send({ tourguide });
     });
 
