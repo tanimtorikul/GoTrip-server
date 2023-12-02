@@ -100,7 +100,7 @@ async function run() {
       const result = await userCollection.insertOne(user);
       res.send(result);
     });
-    // user admin api
+    //  admin api
     app.patch("/users/admin/:id", async (req, res) => {
       const id = req.params.id;
       const filter = { _id: new ObjectId(id) };
@@ -112,6 +112,7 @@ async function run() {
       const result = await userCollection.updateOne(filter, updatedDoc);
       res.send(result);
     });
+
     app.get("/users/admin/:email", verifyToken, async (req, res) => {
       const email = req.params.email;
       if (email !== req.decoded.email) {
@@ -124,6 +125,31 @@ async function run() {
         admin = user?.role === "admin";
       }
       res.send({ admin });
+    });
+    //  touguide api
+    app.patch("/users/tourguide/:id", async (req, res) => {
+      const id = req.params.id;
+      const filter = { _id: new ObjectId(id) };
+      const updatedDoc = {
+        $set: {
+          role: "tourguide",
+        },
+      };
+      const result = await userCollection.updateOne(filter, updatedDoc);
+      res.send(result);
+    });
+    app.get("/users/tourguide/:email", verifyToken, async (req, res) => {
+      const email = req.params.email;
+      if (email !== req.decoded.email) {
+        return res.status(403).send({ message: "unauthorized access" });
+      }
+      const query = { email: email };
+      const user = await userCollection.findOne(query);
+      let tourguide = false;
+      if (user) {
+        admin = user?.role === "tourguide";
+      }
+      res.send({ tourguide });
     });
 
     // stories related apis
